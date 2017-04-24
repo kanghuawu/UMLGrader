@@ -1,0 +1,6 @@
+*.pyc
+.env
+*.DS_Store
+__pycache__
+multi_tenant_grader
+simple-file-upload
