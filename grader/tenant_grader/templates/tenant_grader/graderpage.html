@@ -1,0 +1,31 @@
+<h1>Java Parser</h1>
+
+<form method="post" enctype="multipart/form-data">
+	{% csrf_token %}
+	<input type="file" name="myfile">
+	<button type="submit">Upload</button>
+</form>
+{% if uploaded_file_url %}
+	<p>{{ uploaded_file_url }}</p>
+{% endif %}
+
+
+<h1>Grades</h1>
+{% if result %}
+	<table border="1">
+	{% for ti in title %}
+		<td> {{ti}}</td>
+	{% endfor %}
+	{% for re in result %}
+		<tr>
+		{% for r in re %}
+			<td>{{ r }}</td>
+		{% endfor %}
+		</tr>
+	{% endfor %}
+	</table>
+{% else %}
+<p>
+	No record yet.
+</p>
+{% endif %}
