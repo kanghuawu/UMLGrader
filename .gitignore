@@ -4,3 +4,4 @@
 __pycache__
 multi_tenant_grader
 simple-file-upload
+grader/media/*
