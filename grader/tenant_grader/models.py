@@ -12,7 +12,7 @@ from django.db import models
 
 class TenantData(models.Model):
     record_id = models.CharField(db_column='RECORD_ID', max_length=45)  # Field name made lowercase.
-    tenant_id = models.CharField(db_column='TENANT_ID', primary_key=True, max_length=10)  # Field name made lowercase.
+    tenant_id = models.CharField(db_column='TENANT_ID', max_length=10)  # Field name made lowercase.
     column_1 = models.CharField(db_column='COLUMN_1', max_length=80, blank=True, null=True)  # Field name made lowercase.
     column_2 = models.CharField(db_column='COLUMN_2', max_length=80, blank=True, null=True)  # Field name made lowercase.
     column_3 = models.CharField(db_column='COLUMN_3', max_length=80, blank=True, null=True)  # Field name made lowercase.
@@ -26,10 +26,13 @@ class TenantData(models.Model):
         # managed = False
         db_table = 'TENANT_DATA'
         unique_together = (('tenant_id', 'record_id'),)
+    def getFields(self, ln):
+        re = [self.record_id, self.column_1, self.column_2, self.column_3, self.column_4, self.column_5]
+        return re[:ln]
 
 
 class TenantFields(models.Model):
-    tenant = models.ForeignKey('TenantTable', models.DO_NOTHING, db_column='TENANT_ID', primary_key=True)  # Field name made lowercase.
+    tenant = models.ForeignKey('TenantTable', models.DO_NOTHING, db_column='TENANT_ID')  # Field name made lowercase.
     field_name = models.CharField(db_column='FIELD_NAME', max_length=45)  # Field name made lowercase.
     field_type = models.CharField(db_column='FIELD_TYPE', max_length=80, blank=True, null=True)  # Field name made lowercase.
     field_column = models.IntegerField(db_column='FIELD_COLUMN')  # Field name made lowercase.

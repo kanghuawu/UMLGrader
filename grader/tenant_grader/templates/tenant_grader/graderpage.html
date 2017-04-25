@@ -1,16 +1,30 @@
 <h1>Java Parser</h1>
 
+<h3>Upload a file</h3>
+
+
 <form method="post" enctype="multipart/form-data">
 	{% csrf_token %}
+	{{ radio }}
 	<input type="file" name="myfile">
-	<button type="submit">Upload</button>
+	<button type="submit">Upload and Parse</button>
 </form>
-{% if uploaded_file_url %}
-	<p>{{ uploaded_file_url }}</p>
-{% endif %}
+{{ uploaded_file_url }}
 
+<h3>Result</h3>
 
-<h1>Grades</h1>
+<img src="media/output.png" >
+
+<h3>Submit a Grade</h3>
+<form method="post" action="">
+	{% csrf_token %}
+	<table>
+		{{ form }}
+	</table>
+	<input type="submit" name="form_sub" value="Submit"/>
+</form>
+
+<h3>Previous Grades</h3>
 {% if result %}
 	<table border="1">
 	{% for ti in title %}
