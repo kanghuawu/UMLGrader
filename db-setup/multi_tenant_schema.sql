@@ -1,7 +1,7 @@
 
 create database grader;
 use grader;
-
+show tables;
 
 -- -----------------------------------------------------
 -- Table `grader`.`TENANT_TABLE`
@@ -47,20 +47,18 @@ insert into TENANT_TABLE( TENANT_ID, TENANT_PASS )
 values ( 'khwu', 'abc123' ) ;
 
 -- TENANT FIELDS
-insert into TENANT_FIELDS( TENANT_ID, FIELD_NAME, FIELD_TYPE, FIELD_COLUMN ) values ( 'khwu', 'NUM', 'INT', 1 ) ;
-insert into TENANT_FIELDS( TENANT_ID, FIELD_NAME, FIELD_TYPE, FIELD_COLUMN ) values ( 'khwu', 'FILE_NAME', 'VARCHAR(45)', 2 ) ;
-insert into TENANT_FIELDS( TENANT_ID, FIELD_NAME, FIELD_TYPE, FIELD_COLUMN ) values ( 'khwu', 'SCORE', 'VARCHAR(45)', 3 ) ;
-insert into TENANT_FIELDS( TENANT_ID, FIELD_NAME, FIELD_TYPE, FIELD_COLUMN ) values ( 'khwu', 'COMMENT', 'VARCHAR(45)', 4 ) ;
+insert into TENANT_FIELDS( id, TENANT_ID, FIELD_NAME, FIELD_TYPE, FIELD_COLUMN ) values ( '1', 'khwu', 'Score', 'VARCHAR(45)', 1 ) ;
+insert into TENANT_FIELDS( id,TENANT_ID, FIELD_NAME, FIELD_TYPE, FIELD_COLUMN ) values ( '2', 'khwu', 'Comment', 'VARCHAR(45)', 2 ) ;
 
 -- TENANT_DATA Record Example
-insert into TENANT_DATA (RECORD_ID, TENANT_ID, COLUMN_1, COLUMN_2  ) 
-values ( '1', 'khwu', '90', 'Very good!' ) ;
-insert into TENANT_DATA (RECORD_ID, TENANT_ID, COLUMN_1, COLUMN_2  ) 
-values ( '2', 'khwu', '70', 'Not so good!' ) ;
-insert into TENANT_DATA (RECORD_ID, TENANT_ID, COLUMN_1, COLUMN_2  ) 
-values ( '3', 'khwu', '40', 'Thanks for your interest' ) ;
-insert into TENANT_DATA (RECORD_ID, TENANT_ID, COLUMN_1, COLUMN_2  ) 
-values ( '4', 'khwu', '100', 'Perfect' ) ;
+insert into TENANT_DATA (id, RECORD_ID, TENANT_ID, COLUMN_1, COLUMN_2  ) 
+values ( '1', '1', 'khwu', '90', 'Very good!' ) ;
+insert into TENANT_DATA (id, RECORD_ID, TENANT_ID, COLUMN_1, COLUMN_2  ) 
+values ( '2', '2', 'khwu', '70', 'Not so good!' ) ;
+insert into TENANT_DATA (id, RECORD_ID, TENANT_ID, COLUMN_1, COLUMN_2  ) 
+values ( '3', '3', 'khwu', '40', 'Thanks for your interest' ) ;
+insert into TENANT_DATA (id, RECORD_ID, TENANT_ID, COLUMN_1, COLUMN_2  ) 
+values ( '4', '4', 'khwu', '100', 'Perfect' ) ;
 
 -- QUERY
 select T.TENANT_ID, F.FIELD_NAME, F.FIELD_TYPE, F.FIELD_COLUMN
@@ -71,6 +69,8 @@ order by F.FIELD_COLUMN;
 
 
 -- Test Queries
-select * from TENANT_DATA where TENANT_ID = 'khwu' ;
-select * from TENANT_FIELDS where TENANT_ID = 'khwu' ;
-update TENANT_FIELDS SET FIELD_COLUMN = 4 where FIELD_NAME =  'COMMENT;
+select * from TENANT_TABLE;
+select * from TENANT_DATA;
+select * from TENANT_FIELDS;
+
+delete  from TENANT_DATA where  COLUMN_1 = 70;

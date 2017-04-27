@@ -4,4 +4,6 @@
 __pycache__
 multi_tenant_grader
 simple-file-upload
+simple-django-login
 grader/media/*
+!grader/media/.gitkeep

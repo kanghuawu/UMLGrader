@@ -1,7 +1,6 @@
-<h1>Java Parser</h1>
-
+{% extends "base.html" %}
+{% block content %}
 <h3>Upload a file</h3>
-
 
 <form method="post" enctype="multipart/form-data">
 	{% csrf_token %}
@@ -13,7 +12,9 @@
 
 <h3>Result</h3>
 
-<img src="media/output.png" >
+<!-- <img src="static/output.png" > -->
+{% load static %}
+<img src="{% url  %}" alt="Result"/>
 
 <h3>Submit a Grade</h3>
 <form method="post" action="">
@@ -43,3 +44,4 @@
 	No record yet.
 </p>
 {% endif %}
+{% endblock %}

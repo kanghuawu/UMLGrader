@@ -11,11 +11,15 @@ import json
 import os
 import os.path as osp
 import zipfile
+from django.contrib.auth.decorators import login_required
+import time
 
 tenant_id='khwu'
+newfile = ''
 
-# Create your views here.
+@login_required
 def grader(request):
+	# print user_id
 	grade_title, grade_result = getGradesFromDB()
 	radio = ClassSeqDiagram()
 	file = uploadFile(request)
@@ -39,8 +43,10 @@ def grader(request):
 		'uploaded_file_url': file,
 		'title': grade_title,
 		'result': grade_result,
-		'form' : form
+		'form' : form,
+		'pic': newfile
 	}
+	print newfile
 	return render(request, 'tenant_grader/graderpage.html', context)
 
 def getGradesFromDB(tenant_id='khwu'):
@@ -48,8 +54,6 @@ def getGradesFromDB(tenant_id='khwu'):
 	TF_name = list(TF.values_list('field_name', flat=True))
 	grade_title = ['Record Number']
 	grade_title.extend(list(TF_name))
-	# for fi in field:
-	# 	grade_title.append(fi.field_name)
 	grade_result = []
 	for TD in TenantData.objects.filter(tenant_id=tenant_id).order_by('record_id'):
 		grade_result.append(TD.getFields(TF.count() + 1))
@@ -85,6 +89,7 @@ def updateForm(request, tenant_id='khwu'):
 
 USER = osp.join(osp.expanduser('~'), tenant_id)
 MEDIA = osp.join(os.getcwd(), 'media')
+STATIC = osp.join(os.getcwd(), 'static', 'tenant_grader')
 JAR = osp.join(USER, 'class', 'umlparser.jar')
 CLASS = osp.join(USER, 'class', 'class')
 SEQ = osp.join(USER, 'seq', 'sequence')
@@ -96,15 +101,20 @@ def parseJavaFile(diagram_type, filename):
 		unzipFile(osp.join(MEDIA, filename), CLASS)
 		sp.call(["java", "-jar", JAR, CLASS, osp.join(OUTPUT, 'output.png')])
 	else:
+		print filename
 		unzipFile(osp.join(MEDIA, filename), SEQ)
 		sp.call(["make", "-C", SEQ_MAKE, 'demo'])
-	sp.call(["cp", osp.join(OUTPUT, 'output.png'), MEDIA])
+	timestr = time.strftime("%Y%m%d-%H%M%S")
+	newfile = osp.join(STATIC, timestr+'.png')
+	sp.call(["cp", osp.join(OUTPUT, 'output.png'), newfile])
 		
 		
 def unzipFile(curdir, extractdir):
-	zip_ref = zipfile.ZipFile(curdir, 'r')
-	zip_ref.extractall(extractdir)
-	zip_ref.close()
+	sp.call(["unzip", "-j", curdir, '-d', extractdir])
+
+	# zip_ref = zipfile.ZipFile(curdir, 'r')
+	# zip_ref.extractall(extractdir)
+	# zip_ref.close()
 
 def cleanFile():
 	sp.call(["make", "-C", SEQ_MAKE, 'clean'])
