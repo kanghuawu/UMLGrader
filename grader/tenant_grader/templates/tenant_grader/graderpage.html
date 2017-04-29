@@ -8,13 +8,14 @@
 	<input type="file" name="myfile">
 	<button type="submit">Upload and Parse</button>
 </form>
-{{ uploaded_file_url }}
+{% load static %}
+{{STATIC_URL}}/
+{% load static %}
+{{MEDIA_URL}}/
 
 <h3>Result</h3>
-
 <!-- <img src="static/output.png" > -->
-{% load static %}
-<img src="{% static "tenant_grader/output.png" %}" alt="Result"/>
+<img src="/media/{{ uploaded_file_url }}" alt="Result"/>
 
 <h3>Submit a Grade</h3>
 <form method="post" action="">

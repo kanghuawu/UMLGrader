@@ -15,11 +15,17 @@ from django.contrib.auth.decorators import login_required
 import time
 
 tenant_id='khwu'
-newfile = ''
+newfilelocation = ''
+@login_required
+def loginredirect(request):
+	# print user.username
+	url = '/grader/%s/' % request.user.username
+	return HttpResponseRedirect(url)
+
 
 @login_required
-def grader(request):
-	# print user_id
+def grader(request, username='khwu'):
+	print username
 	grade_title, grade_result = getGradesFromDB()
 	radio = ClassSeqDiagram()
 	file = uploadFile(request)
@@ -43,10 +49,8 @@ def grader(request):
 		'uploaded_file_url': file,
 		'title': grade_title,
 		'result': grade_result,
-		'form' : form,
-		'pic': newfile
+		'form' : form
 	}
-	print newfile
 	return render(request, 'tenant_grader/graderpage.html', context)
 
 def getGradesFromDB(tenant_id='khwu'):
@@ -67,11 +71,11 @@ def uploadFile(request):
         myfile = request.FILES['myfile']
         fs = FileSystemStorage()
         filename = fs.save(myfile.name, myfile)
-        parseJavaFile(diagram_type, filename)
+        newfilelocation = parseJavaFile(diagram_type, filename)
         uploaded_file_url = fs.url(filename)
         # print filename
         # print uploaded_file_url
-    	return "File uploaded"
+    	return newfilelocation
     elif request.method == 'POST' and not request.FILES:
     	return "Please select a file"
 
@@ -105,8 +109,9 @@ def parseJavaFile(diagram_type, filename):
 		unzipFile(osp.join(MEDIA, filename), SEQ)
 		sp.call(["make", "-C", SEQ_MAKE, 'demo'])
 	timestr = time.strftime("%Y%m%d-%H%M%S")
-	newfile = osp.join(STATIC, timestr+'.png')
+	newfile = osp.join(MEDIA, timestr+'.png')
 	sp.call(["cp", osp.join(OUTPUT, 'output.png'), newfile])
+	return timestr+'.png'
 		
 		
 def unzipFile(curdir, extractdir):
