@@ -24,15 +24,11 @@ def loginredirect(request):
 
 
 @login_required
-def grader(request, username='khwu'):
+def grader(request, username):
 	print username
 	grade_title, grade_result = getGradesFromDB()
 	radio = ClassSeqDiagram()
 	file = uploadFile(request)
-	# form = updateForm(request)
-	# if request.POST:
-	# 	return HttpResponseRedirect(reverse("grader"))
-	# print request.POST['choice_field'] == '1'
 	if request.method == 'POST' and 'form_sub' in request.POST:
 		form = GradeForm(request.POST)
 		new_grade = form.save(commit=False)
@@ -79,21 +75,9 @@ def uploadFile(request):
     elif request.method == 'POST' and not request.FILES:
     	return "Please select a file"
 
-def updateForm(request, tenant_id='khwu'):
-	if request.method == 'POST' and 'form_sub' in request.POST:
-		form = GradeForm(request.POST)
-		new_grade = form.save(commit=False)
-		new_grade.record_id = TenantData.objects.filter(tenant_id=tenant_id).count() + 1	
-		new_grade.tenant_id = tenant_id
-		if form.is_valid():
-			form.save()
-	else:
-		form = GradeForm()
-	return form
-
 USER = osp.join(osp.expanduser('~'), tenant_id)
 MEDIA = osp.join(os.getcwd(), 'media')
-STATIC = osp.join(os.getcwd(), 'static', 'tenant_grader')
+STATIC = osp.join(os.getcwd(), 'static')
 JAR = osp.join(USER, 'class', 'umlparser.jar')
 CLASS = osp.join(USER, 'class', 'class')
 SEQ = osp.join(USER, 'seq', 'sequence')
@@ -109,7 +93,7 @@ def parseJavaFile(diagram_type, filename):
 		unzipFile(osp.join(MEDIA, filename), SEQ)
 		sp.call(["make", "-C", SEQ_MAKE, 'demo'])
 	timestr = time.strftime("%Y%m%d-%H%M%S")
-	newfile = osp.join(MEDIA, timestr+'.png')
+	newfile = osp.join(STATIC, timestr+'.png')
 	sp.call(["cp", osp.join(OUTPUT, 'output.png'), newfile])
 	return timestr+'.png'
 		

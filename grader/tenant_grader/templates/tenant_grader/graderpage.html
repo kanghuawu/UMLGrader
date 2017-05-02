@@ -9,13 +9,10 @@
 	<button type="submit">Upload and Parse</button>
 </form>
 {% load static %}
-{{STATIC_URL}}/
-{% load static %}
-{{MEDIA_URL}}/
 
 <h3>Result</h3>
-<!-- <img src="static/output.png" > -->
-<img src="/media/{{ uploaded_file_url }}" alt="Result"/>
+<img src="{% static "" %}{{ uploaded_file_url }}" >
+<!-- <img src="/media/{{ uploaded_file_url }}" alt="Result"/> -->
 
 <h3>Submit a Grade</h3>
 <form method="post" action="">
