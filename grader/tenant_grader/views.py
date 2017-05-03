@@ -14,8 +14,7 @@ import zipfile
 from django.contrib.auth.decorators import login_required
 import time
 
-tenant_id='khwu'
-newfilelocation = ''
+
 @login_required
 def loginredirect(request):
 	# print user.username
@@ -25,31 +24,44 @@ def loginredirect(request):
 
 @login_required
 def grader(request, username):
-	print username
-	grade_title, grade_result = getGradesFromDB()
-	radio = ClassSeqDiagram()
-	file = uploadFile(request)
+	global thisuser
+	thisuser = username
+
+	global USER, MEDIA, STATIC, JAR, CLASS, SEQ, SEQ_MAKE, OUTPUT
+	USER = osp.join(osp.expanduser('~'), username)
+	MEDIA = osp.join(os.getcwd(), 'media')
+	STATIC = osp.join(os.getcwd(), 'static')
+	JAR = osp.join(USER, 'class', 'umlparser.jar')
+	CLASS = osp.join(USER, 'class', 'class')
+	SEQ = osp.join(USER, 'seq', 'sequence')
+	SEQ_MAKE = osp.join(USER, 'seq')
+	OUTPUT = osp.join(USER, 'output')
+
+
+	grade_title, grade_result = getGradesFromDB(tenant_id=username)
+	diagram_type = ClassSeqDiagram()
+	new_file = uploadFile(request)
 	if request.method == 'POST' and 'form_sub' in request.POST:
 		form = GradeForm(request.POST)
 		new_grade = form.save(commit=False)
-		new_grade.record_id = TenantData.objects.filter(tenant_id=tenant_id).count() + 1	
-		new_grade.tenant_id = tenant_id
+		new_grade.record_id = TenantData.objects.filter(tenant_id=username).count() + 1	
+		new_grade.tenant_id = username
 		if form.is_valid():
 			form.save()
-			return HttpResponseRedirect(reverse("grader"))
+			return HttpResponseRedirect("/grader/"+username)
 	else:
 		form = GradeForm()
 
 	context = {
-		'radio': radio,
-		'uploaded_file_url': file,
+		'diagram_type': diagram_type,
+		'new_file': new_file,
 		'title': grade_title,
 		'result': grade_result,
 		'form' : form
 	}
 	return render(request, 'tenant_grader/graderpage.html', context)
 
-def getGradesFromDB(tenant_id='khwu'):
+def getGradesFromDB(tenant_id):
 	TF = TenantFields.objects.filter(tenant_id=tenant_id).order_by('field_column')
 	TF_name = list(TF.values_list('field_name', flat=True))
 	grade_title = ['Record Number']
@@ -67,22 +79,17 @@ def uploadFile(request):
         myfile = request.FILES['myfile']
         fs = FileSystemStorage()
         filename = fs.save(myfile.name, myfile)
-        newfilelocation = parseJavaFile(diagram_type, filename)
+        new_file_location = parseJavaFile(diagram_type, filename)
         uploaded_file_url = fs.url(filename)
-        # print filename
-        # print uploaded_file_url
-    	return newfilelocation
-    elif request.method == 'POST' and not request.FILES:
-    	return "Please select a file"
-
-USER = osp.join(osp.expanduser('~'), tenant_id)
-MEDIA = osp.join(os.getcwd(), 'media')
-STATIC = osp.join(os.getcwd(), 'static')
-JAR = osp.join(USER, 'class', 'umlparser.jar')
-CLASS = osp.join(USER, 'class', 'class')
-SEQ = osp.join(USER, 'seq', 'sequence')
-SEQ_MAKE = osp.join(USER, 'seq')
-OUTPUT = osp.join(USER, 'output')
+    	return new_file_location
+# USER = osp.join(osp.expanduser('~'), 'son')
+# MEDIA = osp.join(os.getcwd(), 'media')
+# STATIC = osp.join(os.getcwd(), 'static')
+# JAR = osp.join(USER, 'class', 'umlparser.jar')
+# CLASS = osp.join(USER, 'class', 'class')
+# SEQ = osp.join(USER, 'seq', 'sequence')
+# SEQ_MAKE = osp.join(USER, 'seq')
+# OUTPUT = osp.join(USER, 'output')
 
 def parseJavaFile(diagram_type, filename):
 	if diagram_type == '1':
@@ -109,6 +116,8 @@ def cleanFile():
 	sp.call(["make", "-C", SEQ_MAKE, 'clean'])
 	sp.call(["rm", "-rf", MEDIA])
 	sp.call(["mkdir", MEDIA])
+	sp.call(["rm", "-rf", STATIC])
+	sp.call(["mkdir", STATIC])
 	sp.call(["rm", "-rf", CLASS])
 	sp.call(["mkdir", CLASS])
 	sp.call(["rm", "-rf", SEQ])

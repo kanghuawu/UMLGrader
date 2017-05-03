@@ -4,15 +4,16 @@
 
 <form method="post" enctype="multipart/form-data">
 	{% csrf_token %}
-	{{ radio }}
+	{{ diagram_type }}
 	<input type="file" name="myfile">
 	<button type="submit">Upload and Parse</button>
 </form>
+
 {% load static %}
 
 <h3>Result</h3>
-<img src="{% static "" %}{{ uploaded_file_url }}" >
-<!-- <img src="/media/{{ uploaded_file_url }}" alt="Result"/> -->
+<img src="{% static "" %}{{ new_file }}" >
+<!-- <img src="/media/{{ new_file }}" alt="Result"/> -->
 
 <h3>Submit a Grade</h3>
 <form method="post" action="">
