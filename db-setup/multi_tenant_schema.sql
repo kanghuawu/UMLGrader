@@ -45,10 +45,16 @@ ENGINE = InnoDB;
 -- TENANT TABLE
 insert into TENANT_TABLE( TENANT_ID, TENANT_PASS )
 values ( 'khwu', 'abc123' ) ;
+insert into TENANT_TABLE( TENANT_ID, TENANT_PASS )
+values ( 'son', 'abc123' ) ;
 
 -- TENANT FIELDS
 insert into TENANT_FIELDS( id, TENANT_ID, FIELD_NAME, FIELD_TYPE, FIELD_COLUMN ) values ( '1', 'khwu', 'Score', 'VARCHAR(45)', 1 ) ;
 insert into TENANT_FIELDS( id,TENANT_ID, FIELD_NAME, FIELD_TYPE, FIELD_COLUMN ) values ( '2', 'khwu', 'Comment', 'VARCHAR(45)', 2 ) ;
+
+insert into TENANT_FIELDS( id, TENANT_ID, FIELD_NAME, FIELD_TYPE, FIELD_COLUMN ) values ( '3', 'son', 'Completeness', 'VARCHAR(45)', 1 ) ;
+insert into TENANT_FIELDS( id,TENANT_ID, FIELD_NAME, FIELD_TYPE, FIELD_COLUMN ) values ( '4', 'son', 'Score', 'VARCHAR(45)', 2 ) ;
+insert into TENANT_FIELDS( id,TENANT_ID, FIELD_NAME, FIELD_TYPE, FIELD_COLUMN ) values ( '5', 'son', 'Comment', 'VARCHAR(45)', 3 ) ;
 
 -- TENANT_DATA Record Example
 insert into TENANT_DATA (id, RECORD_ID, TENANT_ID, COLUMN_1, COLUMN_2  ) 
@@ -73,4 +79,4 @@ select * from TENANT_TABLE;
 select * from TENANT_DATA;
 select * from TENANT_FIELDS;
 
-delete  from TENANT_DATA where  COLUMN_1 = 70;
+delete  from TENANT_DATA where  id >=  5;

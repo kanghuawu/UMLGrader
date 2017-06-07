@@ -9,21 +9,20 @@
 	<button type="submit">Upload and Parse</button>
 </form>
 
-{% load static %}
 
 <h3>Result</h3>
-<img src="{% static "" %}{{ new_file }}" >
-<!-- <img src="/media/{{ new_file }}" alt="Result"/> -->
-
-<h3>Submit a Grade</h3>
-<form method="post" action="">
-	{% csrf_token %}
-	<table>
-		{{ form }}
-	</table>
-	<input type="submit" name="form_sub" value="Submit"/>
-</form>
-
+{% if new_file %}
+	<img src="https://s3-us-west-1.amazonaws.com/javaparser/{{ new_file }}" >
+	<br><br>
+	<h3>Submit a Grade</h3>
+	<form method="post" action="">
+		{% csrf_token %}
+		<table>
+			{{ form }}
+		</table>
+		<input type="submit" name="form_sub" value="Submit"/>
+	</form>
+{% endif %}
 <h3>Previous Grades</h3>
 {% if result %}
 	<table border="1">

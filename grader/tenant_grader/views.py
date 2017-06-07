@@ -13,7 +13,7 @@ import os.path as osp
 import zipfile
 from django.contrib.auth.decorators import login_required
 import time
-
+import boto3
 
 @login_required
 def loginredirect(request):
@@ -48,7 +48,8 @@ def grader(request, username):
 		new_grade.tenant_id = username
 		if form.is_valid():
 			form.save()
-			return HttpResponseRedirect("/grader/"+username)
+			url = '/grader/%s/' % request.user.username
+			return HttpResponseRedirect(url)
 	else:
 		form = GradeForm()
 
@@ -57,7 +58,7 @@ def grader(request, username):
 		'new_file': new_file,
 		'title': grade_title,
 		'result': grade_result,
-		'form' : form
+		'form' : form,
 	}
 	return render(request, 'tenant_grader/graderpage.html', context)
 
@@ -93,19 +94,30 @@ def uploadFile(request):
 
 def parseJavaFile(diagram_type, filename):
 	if diagram_type == '1':
+		# print filename
+		# print CLASS
+		# print MEDIA
 		unzipFile(osp.join(MEDIA, filename), CLASS)
 		sp.call(["java", "-jar", JAR, CLASS, osp.join(OUTPUT, 'output.png')])
 	else:
-		print filename
+		# print filename
 		unzipFile(osp.join(MEDIA, filename), SEQ)
 		sp.call(["make", "-C", SEQ_MAKE, 'demo'])
 	timestr = time.strftime("%Y%m%d-%H%M%S")
-	newfile = osp.join(STATIC, timestr+'.png')
+	key = timestr+'.png'
+	newfile = osp.join(STATIC, key)
 	sp.call(["cp", osp.join(OUTPUT, 'output.png'), newfile])
-	return timestr+'.png'
-		
+	data = open(newfile, 'rb')
+	s3 = boto3.resource('s3')
+	s3.Bucket('javaparser').put_object(Key=key, Body=data)
+	object_acl = s3.ObjectAcl('javaparser', key)
+	response = object_acl.put(ACL='public-read')
+	return key
 		
 def unzipFile(curdir, extractdir):
+	print 'inside unzipfile'
+	print curdir
+	print extractdir
 	sp.call(["unzip", "-j", curdir, '-d', extractdir])
 
 	# zip_ref = zipfile.ZipFile(curdir, 'r')
